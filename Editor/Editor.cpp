@@ -3,6 +3,8 @@
 
 #include "framework.h"
 #include "Editor.h"
+#include "EntityList.h"
+#include "Row.h"
 
 #define MAX_LOADSTRING 100
 
@@ -24,6 +26,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
+
+    Row row;
+    if (!row.Create(L"ROW", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 500, 500, 0))
+    {
+        MessageBox(NULL, L"row", L"you suck", MB_OK);
+        return 0;
+    }
+    EntityList entityList1;
+    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, CW_USEDEFAULT, CW_USEDEFAULT, 250, 250, row.Window()))
+    {
+        MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
+        return 0;
+    }
+    EntityList entityList2;
+    if (!entityList2.Create(L"THE list", WS_CHILD, 0, CW_USEDEFAULT, CW_USEDEFAULT, 250, 250, row.Window()))
+    {
+        MessageBox(NULL, L"entityList2", L"you suck", MB_OK);
+        return 0;
+    }
+    row.addWindow(entityList1.Window());
+    row.addWindow(entityList2.Window());
+    ShowWindow(row.Window(), nCmdShow);
+    ShowWindow(entityList1.Window(), nCmdShow);
+    ShowWindow(entityList2.Window(), nCmdShow);
+
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EDITOR));
     MSG msg;
