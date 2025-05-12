@@ -23,6 +23,10 @@ LRESULT Row::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	{
 		case WM_CREATE:
 			resize();
+			break;
+		case WM_SIZE:	
+			resize();
+			break;
 	}
 	return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 }
@@ -47,7 +51,7 @@ void Row::resize() {
 		int width = windowRect.right - windowRect.left;
 		//if (fixedWidth) width = rowWidth / windows.size();
 
-		SetWindowPos(window, NULL, currentXposition, rowRect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+		SetWindowPos(window, NULL, currentXposition, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 		currentXposition += width;
 	}
 }

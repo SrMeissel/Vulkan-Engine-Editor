@@ -14,19 +14,24 @@ private:
 
 LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    RECT rect;
+    GetWindowRect(m_hwnd, &rect);
+    int width = rect.right - rect.left;
+    int height = rect.bottom - rect.top;
+
     switch (uMsg)
     {
         case WM_CREATE:
             // Create the ListBox control
             hListBox = CreateWindowEx(
-                WS_EX_CLIENTEDGE,       // Extended window style
+                0,
                 L"LISTBOX",              // Predefined class name for ListBox
                 L"list",                     // No window title
                 WS_CHILD | WS_VISIBLE | WS_VSCROLL | LBS_NOTIFY | LBS_STANDARD,
-                10,                     // x position
-                10,                     // y position
-                200,                    // width
-                200,                    // height
+                0,                     // x position
+                0,                     // y position
+                width,                    // width
+                height,                    // height
                 m_hwnd,                   // Parent window
                 (HMENU)1,               // Control ID
                 NULL,                   // Instance handle
@@ -40,7 +45,7 @@ LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
             SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)L"Item 4");
             SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)L"Item 5");
 
-            return 0;
+            break;
         case WM_COMMAND:
             // Handle ListBox notifications
             if (LOWORD(wParam) == 1 && HIWORD(wParam) == LBN_SELCHANGE) {
@@ -56,11 +61,20 @@ LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
                     // MessageBox(hwnd, buffer, "Selected Item", MB_OK);
                 }
             }
-            return 0;
+            break;
 
         case WM_DESTROY:
             PostQuitMessage(0);
-            return 0;
+            break;
+        case WM_ERASEBKGND: {
+            HDC hdc = (HDC)wParam;
+            RECT rect;
+            GetClientRect(m_hwnd, &rect);
+            HBRUSH brush = CreateSolidBrush(RGB(0, 255, 0)); // Green background
+            FillRect(hdc, &rect, brush);
+            DeleteObject(brush);
+            break;
+        }
     }
 
     return DefWindowProc(m_hwnd, uMsg, wParam, lParam);

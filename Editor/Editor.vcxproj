@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Editor.h" />
+    <ClInclude Include="engine.h" />
     <ClInclude Include="EntityList.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Row.h" />

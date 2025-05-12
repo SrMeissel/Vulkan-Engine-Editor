@@ -34,19 +34,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return 0;
     }
     EntityList entityList1;
-    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, CW_USEDEFAULT, CW_USEDEFAULT, 250, 250, row.Window()))
+    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 250, row.Window()))
     {
         MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
         return 0;
     }
     EntityList entityList2;
-    if (!entityList2.Create(L"THE list", WS_CHILD, 0, CW_USEDEFAULT, CW_USEDEFAULT, 250, 250, row.Window()))
+    if (!entityList2.Create(L"THE list", WS_CHILD, 0, 0, 0, 250, 250, row.Window()))
     {
         MessageBox(NULL, L"entityList2", L"you suck", MB_OK);
         return 0;
     }
     row.addWindow(entityList1.Window());
     row.addWindow(entityList2.Window());
+
     ShowWindow(row.Window(), nCmdShow);
     ShowWindow(entityList1.Window(), nCmdShow);
     ShowWindow(entityList2.Window(), nCmdShow);
