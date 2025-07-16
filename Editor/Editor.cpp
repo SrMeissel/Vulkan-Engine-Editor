@@ -5,6 +5,7 @@
 #include "Editor.h"
 #include "EntityList.h"
 #include "Row.h"
+#include "engine.h"
 
 #define MAX_LOADSTRING 100
 
@@ -28,41 +29,65 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
 
     Row row;
-    if (!row.Create(L"ROW", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 500, 500, 0))
+    if (!row.Create(L"ROW", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, 0))
     {
         MessageBox(NULL, L"row", L"you suck", MB_OK);
         return 0;
     }
     EntityList entityList1;
-    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 250, row.Window()))
+    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 720, row.Window()))
     {
         MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
         return 0;
     }
     EntityList entityList2;
-    if (!entityList2.Create(L"THE list", WS_CHILD, 0, 0, 0, 250, 250, row.Window()))
+    if (!entityList2.Create(L"THE list", WS_CHILD, 0, 0, 0, 250, 720, row.Window()))
     {
         MessageBox(NULL, L"entityList2", L"you suck", MB_OK);
         return 0;
     }
+    Engine engine;
+    if (!engine.Create(L"engine", WS_CHILD, 0, 0, 0, 1280, 720, row.Window()))
+    {
+        MessageBox(NULL, L"engine", L"you suck", MB_OK);
+        return 0;
+    }
+    
+    //menu on row window
+    HWND mainWindow = row.Window();
+    HMENU hMenu = CreateMenu();
+    HMENU hFileMenu = CreatePopupMenu();
+    AppendMenu(hFileMenu, MF_STRING, 8008, L"Load Collection");
+    AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"&File");
+    SetMenu(mainWindow, hMenu);
+
     row.addWindow(entityList1.Window());
+    row.addWindow(engine.Window());
     row.addWindow(entityList2.Window());
 
     ShowWindow(row.Window(), nCmdShow);
     ShowWindow(entityList1.Window(), nCmdShow);
+    ShowWindow(engine.Window(), nCmdShow);
     ShowWindow(entityList2.Window(), nCmdShow);
 
-
+    engine.runOnce();
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EDITOR));
     MSG msg;
+    bool loop = true;
 
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+    while(loop) {
+        while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+            if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+            {
+                if (msg.message == WM_QUIT) {
+                    loop = false;
+                    break;
+                }
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
+        engine.runOnce();
     }
 
     return (int) msg.wParam;
