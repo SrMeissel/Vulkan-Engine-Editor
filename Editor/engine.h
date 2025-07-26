@@ -61,18 +61,18 @@ LRESULT Engine::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 }
 
-void renderLoop() {
-	createEngine(1280, 720, NULL);
-	MessageBox(NULL, L"engine", L"it works?", MB_OK);
-	destroyEngine();
-}
+//void renderLoop() {
+//	createEngine(1280, 720, NULL);
+//	//MessageBox(NULL, L"engine", L"it works?", MB_OK);
+//	destroyEngine();
+//}
 
 Key findKey(WPARAM param) {
 	auto thing = Win32ToGenericKey.find(static_cast<int>(param));
 	if (thing == Win32ToGenericKey.end()) {
 		static wchar_t buf[32];
 		swprintf(buf, 32, L"Key: %c (VK: 0x%02X)", (char)param, (unsigned int)param);
-		MessageBox(NULL, buf, L"Key Pressed", MB_OK);
+		//MessageBox(NULL, buf, L"Key Pressed", MB_OK);
 		return Key::KEY_0;
 	}
 	else {
