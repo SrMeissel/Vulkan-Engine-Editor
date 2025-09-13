@@ -34,6 +34,9 @@ public:
     }
 
     BaseWindow() : m_hwnd(NULL) { }
+    ~BaseWindow() {
+        //DestroyWindow(m_hwnd);
+    }
 
     BOOL Create(
         PCWSTR lpWindowName,

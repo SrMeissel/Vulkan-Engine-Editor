@@ -9,6 +9,7 @@
 #include "engineControl.h"
 
 #include "ShObjIdl.h"
+
 HRESULT selectFile(std::string& fileName);
 
 class Row : public BaseWindow<Row> {

@@ -40,12 +40,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
         return 0;
     }
-    EntityList entityList2;
-    if (!entityList2.Create(L"THE list", WS_CHILD, 0, 0, 0, 250, 720, row.Window()))
-    {
-        MessageBox(NULL, L"entityList2", L"you suck", MB_OK);
-        return 0;
-    }
+
     Engine engine;
     if (!engine.Create(L"engine", WS_CHILD, 0, 0, 0, 1280, 720, row.Window()))
     {
@@ -63,12 +58,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     row.addWindow(entityList1.Window());
     row.addWindow(engine.Window());
-    row.addWindow(entityList2.Window());
 
     ShowWindow(row.Window(), nCmdShow);
     ShowWindow(entityList1.Window(), nCmdShow);
     ShowWindow(engine.Window(), nCmdShow);
-    ShowWindow(entityList2.Window(), nCmdShow);
+
+    entityList1.addEntry("object", 0);
+    entityList1.addEntry("object1", 1);
+    entityList1.addEntry("object2", 2);
+    entityList1.addEntry("object3", 3);
 
     engine.runOnce();
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EDITOR));
@@ -88,6 +86,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
         engine.runOnce();
+        entityList1.removeEntry(1);
     }
 
     return (int) msg.wParam;
