@@ -48,8 +48,10 @@ LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         InvalidateRect(newEntry->Window(), NULL, TRUE);
 
         auto iter = std::find(entries.begin(), entries.end(), selectedEntry);
-        iter->selected = false;
-        InvalidateRect(iter->Window(), NULL, TRUE);
+        if (iter != entries.end()) {
+            iter->selected = false;
+            InvalidateRect(iter->Window(), NULL, TRUE);
+        }
 
         selectedEntry = newEntry->ID;
         break;

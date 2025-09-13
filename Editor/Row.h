@@ -35,26 +35,6 @@ LRESULT Row::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case WM_SIZE:	
 			resize();
 			break;
-		case WM_COMMAND:
-			switch (LOWORD(wParam)) {
-			case 8008: {
-				static std::string lastFileName;
-				//MessageBox(NULL, L"engine", L"loading collection", MB_OK);
-				auto currentTime = std::chrono::high_resolution_clock::now();
-				std::string fileName;
-				selectFile(fileName);
-				loadCollection(fileName);
-				unloadData(lastFileName);
-				lastFileName = fileName;
-				auto newTime = std::chrono::high_resolution_clock::now();
-				float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
-				std::cout << "time to load: " << fileName << "\n" << frameTime << "ms \n";
-				break;
-			}
-			default:
-				break;
-			}
-			break;
 	}
 	return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 }

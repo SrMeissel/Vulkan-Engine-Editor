@@ -3,8 +3,6 @@
 
 #include "framework.h"
 #include "Editor.h"
-#include "EntityList.h"
-#include "Row.h"
 #include "engine.h"
 
 #define MAX_LOADSTRING 100
@@ -28,47 +26,46 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
 
-    Row row;
-    if (!row.Create(L"ROW", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, 0))
+    Editor editor;
+    if (!editor.Create(L"editor", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, 0)) {
+        MessageBox(NULL, L"editor", L"damn", MB_OK);
+        return 0;
+    }
+    ShowWindow(editor.Window(), nCmdShow);
+
+    if (!editor.row.Create(L"ROW", WS_CHILD, 0, 0, 0, 1920, 1080, editor.Window()))
     {
         MessageBox(NULL, L"row", L"you suck", MB_OK);
         return 0;
     }
-    EntityList entityList1;
-    if (!entityList1.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 720, row.Window()))
+    if (!editor.entityList.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 720, editor.row.Window()))
     {
         MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
         return 0;
     }
 
-    Engine engine;
-    if (!engine.Create(L"engine", WS_CHILD, 0, 0, 0, 1280, 720, row.Window()))
+    if (!editor.engine.Create(L"engine", WS_CHILD, 0, 0, 0, 1280, 720, editor.row.Window()))
     {
         MessageBox(NULL, L"engine", L"you suck", MB_OK);
         return 0;
     }
     
     //menu on row window
-    HWND mainWindow = row.Window();
+    HWND mainWindow = editor.Window();
     HMENU hMenu = CreateMenu();
     HMENU hFileMenu = CreatePopupMenu();
     AppendMenu(hFileMenu, MF_STRING, 8008, L"Load Collection");
     AppendMenu(hMenu, MF_POPUP, (UINT_PTR)hFileMenu, L"&File");
     SetMenu(mainWindow, hMenu);
 
-    row.addWindow(entityList1.Window());
-    row.addWindow(engine.Window());
+    editor.row.addWindow(editor.entityList.Window());
+    editor.row.addWindow(editor.engine.Window());
 
-    ShowWindow(row.Window(), nCmdShow);
-    ShowWindow(entityList1.Window(), nCmdShow);
-    ShowWindow(engine.Window(), nCmdShow);
+    ShowWindow(editor.row.Window(), nCmdShow);
+    ShowWindow(editor.entityList.Window(), nCmdShow);
+    ShowWindow(editor.engine.Window(), nCmdShow);
 
-    entityList1.addEntry("object", 0);
-    entityList1.addEntry("object1", 1);
-    entityList1.addEntry("object2", 2);
-    entityList1.addEntry("object3", 3);
-
-    engine.runOnce();
+    editor.engine.runOnce();
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_EDITOR));
     MSG msg;
     bool loop = true;
@@ -85,9 +82,44 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                 DispatchMessage(&msg);
             }
         }
-        engine.runOnce();
-        entityList1.removeEntry(1);
+        editor.engine.runOnce();
     }
 
     return (int) msg.wParam;
+}
+
+LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg)
+    case WM_COMMAND:
+        switch (LOWORD(wParam)) {
+        case 8008: {
+            static std::string lastFileName;
+            //MessageBox(NULL, L"engine", L"loading collection", MB_OK);
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            std::string fileName;
+            selectFile(fileName);
+
+            std::vector<uint64_t> entities = getAllEntities();
+            for (auto entity : entities) {
+                //have to correct window heiarchy first.
+                entityList.removeEntry(entity);
+            }
+
+            loadCollection(fileName);
+            unloadData(lastFileName);
+
+            entities = getAllEntities();
+            for (auto entity : entities) {
+                //have to correct window heiarchy first.
+                entityList.addEntry("fuck", entity);
+            }
+
+            lastFileName = fileName;
+            auto newTime = std::chrono::high_resolution_clock::now();
+            float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+            std::cout << "time to load: " << fileName << "\n" << frameTime << "ms \n";
+            break;
+            }
+        }
+    return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
 }
