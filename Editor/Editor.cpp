@@ -111,7 +111,7 @@ LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
             entities = getAllEntities();
             for (auto entity : entities) {
                 //have to correct window heiarchy first.
-                entityList.addEntry("Hi im fred", entity);
+                entityList.addEntry("Hi im freddy", entity);
             }
 
             lastFileName = fileName;
