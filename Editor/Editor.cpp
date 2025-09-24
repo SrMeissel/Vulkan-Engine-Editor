@@ -3,7 +3,9 @@
 
 #include "framework.h"
 #include "Editor.h"
+
 #include "engine.h"
+#include "ComponentTypes.hpp"
 
 #define MAX_LOADSTRING 100
 
@@ -110,8 +112,9 @@ LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             entities = getAllEntities();
             for (auto entity : entities) {
-                //have to correct window heiarchy first.
-                entityList.addEntry("Hi im freddy", entity);
+				TransformComponent transform = getTransformComponent(entity);
+                if (transform.name.empty()) transform.name = generateGenericName();
+                entityList.addEntry(transform.name, entity);
             }
 
             lastFileName = fileName;
