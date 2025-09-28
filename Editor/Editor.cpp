@@ -112,6 +112,7 @@ LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
             entities = getAllEntities();
             for (auto entity : entities) {
+
 				TransformComponent transform = getTransformComponent(entity);
                 if (transform.name.empty()) transform.name = generateGenericName();
                 entityList.addEntry(transform.name, entity);
