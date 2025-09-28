@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>C:\Program Files (x86)\Assimp\lib\zlibstaticd.lib;C:\Program Files (x86)\Assimp\lib\assimp-vc143-mtd.lib;$(VULKAN_SDK)\Lib\Vulkan-1.lib;C:\Program Files (x86)\GLFW\lib\glfw3.lib;C:\Program Files\Mono\lib\mono-2.0-sgen.lib;C:\Users\mizer\dev\Vulkan-game-engine\build\engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\mizer\dev\Vulkan-game-engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
