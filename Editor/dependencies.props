@@ -5,10 +5,10 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>C:\Program Files (x86)\Assimp\lib\zlibstaticd.lib;C:\Program Files (x86)\Assimp\lib\assimp-vc143-mtd.lib;$(VULKAN_SDK)\Lib\Vulkan-1.lib;C:\Program Files (x86)\GLFW\lib\glfw3.lib;C:\Program Files\Mono\lib\mono-2.0-sgen.lib;C:\Users\mizer\dev\Vulkan-game-engine\build\engine.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Program Files (x86)\Assimp\lib\zlibstaticd.lib;C:\Program Files (x86)\Assimp\lib\assimp-vc143-mtd.lib;$(VULKAN_SDK)\Lib\Vulkan-1.lib;C:\Program Files (x86)\GLFW\lib\glfw3.lib;C:\Program Files\Mono\lib\mono-2.0-sgen.lib;Path/To/Engine/Lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\mizer\dev\Vulkan-game-engine\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:Path/To/Engine/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />
