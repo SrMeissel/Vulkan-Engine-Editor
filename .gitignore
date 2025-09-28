@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # some other stuff
-dependencies.props
+Editor/dependencies.props
