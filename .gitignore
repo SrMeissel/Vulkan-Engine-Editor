@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # some other stuff
 Editor/dependencies.props
+/Editor/dependencies.props
