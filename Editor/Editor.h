@@ -17,3 +17,9 @@ public:
 	EntityList entityList;
 	Engine engine;
 };
+
+
+std::string generateGenericName() {
+	static int i{ 0 };
+	return std::string{ "Object" + std::to_string(i++) };
+}
