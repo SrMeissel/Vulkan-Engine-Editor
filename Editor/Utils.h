@@ -2,6 +2,10 @@
 #include "combaseapi.h" 
 #include "shobjidl.h"
 #include <atlbase.h> //COM smart pointer
+#include <string>
+
+// File selection utility function
+HRESULT selectFile(std::string& fileName);
 
 template <class DERIVED_TYPE>
 class BaseWindow

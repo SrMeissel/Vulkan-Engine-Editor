@@ -6,6 +6,8 @@
 
 #include "engine.h"
 #include "ComponentTypes.hpp"
+#include <algorithm>
+#include <cctype>
 
 #define MAX_LOADSTRING 100
 
@@ -99,7 +101,33 @@ LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
             //MessageBox(NULL, L"engine", L"loading collection", MB_OK);
             auto currentTime = std::chrono::high_resolution_clock::now();
             std::string fileName;
-            selectFile(fileName);
+            HRESULT hr = selectFile(fileName);
+            
+            // Check if user cancelled the dialog
+            if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+                break; // Do nothing when user cancels
+            }
+            
+            // Check if file selection failed for other reasons
+            if (FAILED(hr) || fileName.empty()) {
+                MessageBox(NULL, L"Failed to select file", L"File Selection Error", MB_OK | MB_ICONERROR);
+                break;
+            }
+            
+            // Simple file type validation - check for common collection file extensions
+            std::string extension = "";
+            size_t dotPos = fileName.find_last_of('.');
+            if (dotPos != std::string::npos) {
+                extension = fileName.substr(dotPos + 1);
+                // Convert to lowercase for comparison
+                std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+            }
+            
+            // Add basic file type validation (assuming collection files have specific extensions)
+            if (extension != "json" && extension != "xml" && extension != "dat" && extension != "collection") {
+                MessageBox(NULL, L"Invalid file type. Please select a valid collection file.", L"Invalid File Type", MB_OK | MB_ICONWARNING);
+                break;
+            }
 
             std::vector<uint64_t> entities = getAllEntities();
             for (auto entity : entities) {
