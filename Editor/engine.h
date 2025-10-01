@@ -29,17 +29,17 @@ LRESULT Engine::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	{
 	case WM_CREATE: {
 		RECT rect;
-		GetClientRect(m_hwnd, &rect);
+		GetClientRect(m_hWnd, &rect);
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 
-		createEngine(width, height, m_hwnd);
+		createEngine(width, height, m_hWnd);
 		//MessageBox(NULL, L"engine", L"it works?", MB_OK);
 		break;
 	}
 	case WM_SIZE: {
 		RECT rect;
-		GetClientRect(m_hwnd, &rect);
+		GetClientRect(m_hWnd, &rect);
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		resize(width, height);
@@ -52,13 +52,13 @@ LRESULT Engine::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		buttonState(findKey(wParam), false);
 		break;
 	case WM_LBUTTONDOWN:
-		SetFocus(m_hwnd);
+		SetFocus(m_hWnd);
 		break;
 	case WM_DESTROY:
 		destroyEngine();
 		break;
 	}
-	return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+	return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 }
 
 //void renderLoop() {

@@ -1,13 +1,10 @@
 #pragma once
 
 #include "Utils.h"
-
 #include <vector>
 #include <chrono>
 #include <iostream>;
-
 #include "engineControl.h"
-
 #include "ShObjIdl.h"
 
 HRESULT selectFile(std::string& fileName);
@@ -21,9 +18,10 @@ public:
 
 	bool fixedWidth{ false };
 	bool fixedHeight{ false };
+	void resize(int totalWidth, int totalHeight);
+	void resize();
 private:
 	std::vector<HWND> windows;
-	void resize();
 };
 
 LRESULT Row::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -36,7 +34,7 @@ LRESULT Row::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			resize();
 			break;
 	}
-	return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+	return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 }
 
 void Row::addWindow(HWND window) {
@@ -44,7 +42,7 @@ void Row::addWindow(HWND window) {
 	resize();
 }
 
-void Row::resize() {
+/* void Row::resize() {
 	int currentXposition = 0;
 	RECT rowRect;
 	GetWindowRect(m_hwnd, &rowRect);
@@ -62,7 +60,49 @@ void Row::resize() {
 		SetWindowPos(window, NULL, currentXposition, 0, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 		currentXposition += width;
 	}
+		
+
+	void Row::resize(int width, int height) {
+    	if (m_hWnd) {
+        MoveWindow(m_hWnd, 0, 0, width, height, TRUE);
+		}
+    }
+
+} */
+
+// Row.cpp
+void Row::resize(int totalWidth, int totalHeight) {
+    if (windows.empty()) return;
+
+    // Example proportions: 20% left, 60% middle, 20% right but these can be changed0
+    int leftWidth   = totalWidth * 2 / 10;
+    int rightWidth  = totalWidth * 2 / 10;
+    int middleWidth = totalWidth - (leftWidth + rightWidth);
+
+    int x = 0;
+
+    // Left window (EntityList)
+    if (windows.size() > 0 && windows[0])
+        MoveWindow(windows[0], x, 0, leftWidth, totalHeight, TRUE);
+    x += leftWidth;
+
+    // Middle window (Engine viewport)
+    if (windows.size() > 1 && windows[1])
+        MoveWindow(windows[1], x, 0, middleWidth, totalHeight, TRUE);
+    x += middleWidth;
+
+    // Right window (future panel)
+    if (windows.size() > 2 && windows[2])
+        MoveWindow(windows[2], x, 0, rightWidth, totalHeight, TRUE);
 }
+
+void Row::resize() {
+    RECT rc;
+    GetClientRect(m_hWnd, &rc);
+    resize(rc.right - rc.left, rc.bottom - rc.top);
+}
+
+
 
 HRESULT selectFile(std::string& fileName) {
 	HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE); // init COM

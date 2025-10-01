@@ -20,31 +20,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    // TODO: Place code here.
-
-    // Initialize global strings
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_EDITOR, szWindowClass, MAX_LOADSTRING);
 
     Editor editor;
-    if (!editor.Create(L"editor", WS_OVERLAPPEDWINDOW, 0, CW_USEDEFAULT, CW_USEDEFAULT, 1920, 1080, 0)) {
+    if (!editor.Create(L"editor", WS_OVERLAPPEDWINDOW)) {
         MessageBox(NULL, L"editor", L"damn", MB_OK);
         return 0;
     }
     ShowWindow(editor.Window(), nCmdShow);
 
-    if (!editor.row.Create(L"ROW", WS_CHILD, 0, 0, 0, 1920, 1080, editor.Window()))
+    if (!editor.row.Create(L"ROW", WS_CHILD, 0, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, editor.Window()))
     {
         MessageBox(NULL, L"row", L"you suck", MB_OK);
         return 0;
     }
-    if (!editor.entityList.Create(L"THE list",  WS_CHILD, 0, 0, 0, 250, 720, editor.row.Window()))
+    if (!editor.entityList.Create(L"THE list",  WS_CHILD, 0, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, editor.row.Window()))
     {
         MessageBox(NULL, L"entityList1", L"you suck", MB_OK);
         return 0;
     }
 
-    if (!editor.engine.Create(L"engine", WS_CHILD, 0, 0, 0, 1280, 720, editor.row.Window()))
+    if (!editor.engine.Create(L"engine", WS_CHILD, 0, 0, 0, CW_USEDEFAULT, CW_USEDEFAULT, editor.row.Window()))
     {
         MessageBox(NULL, L"engine", L"you suck", MB_OK);
         return 0;
@@ -60,6 +57,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     editor.row.addWindow(editor.entityList.Window());
     editor.row.addWindow(editor.engine.Window());
+
+    RECT rc;
+    GetClientRect(editor.Window(), &rc);
+    editor.row.resize(rc.right - rc.left, rc.bottom - rc.top);
 
     ShowWindow(editor.row.Window(), nCmdShow);
     ShowWindow(editor.entityList.Window(), nCmdShow);
@@ -89,7 +90,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 }
 
 LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    /*
     switch (uMsg)
+    case WM_SIZE:{
+        int width  = LOWORD(lParam);
+        int height = HIWORD(lParam);
+
+        // Resize row to fill the editor
+        row.resize(width, height);
+        break;
+    }
+    
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case 8008: {
@@ -121,5 +132,49 @@ LRESULT Editor::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
             break;
             }
         }
-    return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+    return DefWindowProc(m_hwnd, uMsg, wParam, lParam); */
+
+    switch (uMsg) {
+        case WM_SIZE: {
+            int width  = LOWORD(lParam);
+            int height = HIWORD(lParam);
+
+            // Resize row to fill the editor
+            row.resize(width, height);
+            break;
+        }
+
+        case WM_COMMAND: {
+            switch (LOWORD(wParam)) {
+                case 8008: {
+                    static std::string lastFileName;
+                    auto currentTime = std::chrono::high_resolution_clock::now();
+                    std::string fileName;
+                    selectFile(fileName);
+
+                    std::vector<uint64_t> entities = getAllEntities();
+                    for (auto entity : entities)
+                        entityList.removeEntry(entity);
+
+                    loadCollection(fileName);
+                    unloadData(lastFileName);
+
+                    entities = getAllEntities();
+                    for (auto entity : entities)
+                        entityList.addEntry("Hi im freddy", entity);
+
+                    lastFileName = fileName;
+                    auto newTime = std::chrono::high_resolution_clock::now();
+                    float frameTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+                    std::cout << "time to load: " << fileName << "\n" << frameTime << "ms \n";
+                    break;
+                }
+            }
+            break;
+        }
+
+        default:
+            return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
+    }
+    return 0;
 }

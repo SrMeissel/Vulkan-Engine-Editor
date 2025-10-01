@@ -7,7 +7,7 @@ template <class DERIVED_TYPE>
 class BaseWindow
 {
 public:
-    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         DERIVED_TYPE* pThis = NULL;
 
@@ -15,13 +15,13 @@ public:
         {
             CREATESTRUCT* pCreate = (CREATESTRUCT*)lParam;
             pThis = (DERIVED_TYPE*)pCreate->lpCreateParams;
-            SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)pThis);
+            SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)pThis);
 
-            pThis->m_hwnd = hwnd;
+            pThis->m_hWnd = hWnd;
         }
         else
         {
-            pThis = (DERIVED_TYPE*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+            pThis = (DERIVED_TYPE*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
         }
         if (pThis)
         {
@@ -29,11 +29,11 @@ public:
         }
         else
         {
-            return DefWindowProc(hwnd, uMsg, wParam, lParam);
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
     }
 
-    BaseWindow() : m_hwnd(NULL) { }
+    BaseWindow() : m_hWnd(NULL) { }
     ~BaseWindow() {
         //DestroyWindow(m_hwnd);
     }
@@ -58,22 +58,39 @@ public:
 
         RegisterClass(&wc);
 
-        m_hwnd = CreateWindowEx(
+        //Automatically fit the client area
+        if(nWidth == CW_USEDEFAULT || nHeight == CW_USEDEFAULT){
+            int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+            int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+        
+
+        if(nWidth == CW_USEDEFAULT) nWidth = screenWidth;
+        if(nHeight == CW_USEDEFAULT) nHeight = screenHeight;
+        }
+     /*  {
+            RECT rc = { 0, 0, nWidth == CW_USEDEFAULT ? 800 : nWidth, nHeight == CW_USEDEFAULT ? 600 : nHeight };
+            AdjustWindowRectEx(&rc, dwStyle, FALSE, dwExStyle);
+            nWidth = rc.right - rc.left;
+            nHeight = rc.bottom - rc.top;
+        }
+            */
+
+        m_hWnd = CreateWindowEx(
             dwExStyle, ClassName(), lpWindowName, dwStyle, x, y,
             nWidth, nHeight, hWndParent, hMenu, GetModuleHandle(NULL), this
         );
 
-        return (m_hwnd ? TRUE : FALSE);
+        return (m_hWnd ? TRUE : FALSE);
     }
 
-    HWND Window() const { return m_hwnd; }
+    HWND Window() const { return m_hWnd; }
 
 protected:
 
     virtual PCWSTR  ClassName() const = 0;
     virtual LRESULT HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) = 0;
 
-    HWND m_hwnd;
+    HWND m_hWnd;
 };
 
 template <class T> void SafeRelease(T** ppT)

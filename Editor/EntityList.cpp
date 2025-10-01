@@ -5,8 +5,8 @@ void EntityList::addEntry(std::string name, uint64_t ID) {
     EntityEntry& entry = entries.back();
 
     RECT rect;
-    GetClientRect(m_hwnd, &rect);
-    if (!entry.Create(std::to_wstring(entry.ID).c_str(), WS_CHILD, 0, 0, 0, rect.right - rect.left, 75, m_hwnd)) {
+    GetClientRect(m_hWnd, &rect);
+    if (!entry.Create(std::to_wstring(entry.ID).c_str(), WS_CHILD, 0, 0, 0, rect.right - rect.left, 75, m_hWnd)) {
         MessageBox(NULL, L"Entry", L"fail", MB_OK);
         return;
     }
@@ -59,7 +59,7 @@ LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_ERASEBKGND: {
         HDC hdc = (HDC)wParam;
         RECT rect;
-        GetClientRect(m_hwnd, &rect);
+        GetClientRect(m_hWnd, &rect);
         HBRUSH brush = CreateSolidBrush(RGB(255, 255, 255));
         FillRect(hdc, &rect, brush);
         DeleteObject(brush);
@@ -67,22 +67,22 @@ LRESULT EntityList::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
 
-    return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+    return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 }
 
 LRESULT EntityEntry::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_LBUTTONDOWN :
-            SendMessage(GetParent(m_hwnd), WM_UPDATESELECTION, 0, (LPARAM)this);
+            SendMessage(GetParent(m_hWnd), WM_UPDATESELECTION, 0, (LPARAM)this);
             break;
 
         case WM_PAINT: {
             PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(m_hwnd, &ps);
+            HDC hdc = BeginPaint(m_hWnd, &ps);
 
             if (selected) {
                 RECT rect;
-                GetClientRect(m_hwnd, &rect);
+                GetClientRect(m_hWnd, &rect);
                 HBRUSH hBrush = CreateSolidBrush(RGB(0, 120, 215)); // Blue border
                 FrameRect(hdc, &rect, hBrush);
                 DeleteObject(hBrush);
@@ -93,13 +93,13 @@ LRESULT EntityEntry::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
             std::wstring intString = std::to_wstring(ID);
             TextOutW(hdc, 10, 30, intString.c_str(), static_cast<int>(intString.size()));
 
-            EndPaint(m_hwnd, &ps);
+            EndPaint(m_hWnd, &ps);
             break;
         }
         case WM_ERASEBKGND: {
             HDC hdc = (HDC)wParam;
             RECT rect;
-            GetClientRect(m_hwnd, &rect);
+            GetClientRect(m_hWnd, &rect);
             HBRUSH brush = CreateSolidBrush(RGB(255, 255, 255));
             FillRect(hdc, &rect, brush);
             DeleteObject(brush);
@@ -107,5 +107,5 @@ LRESULT EntityEntry::HandleMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         }
     }
 
-    return DefWindowProc(m_hwnd, uMsg, wParam, lParam);
+    return DefWindowProc(m_hWnd, uMsg, wParam, lParam);
 }
